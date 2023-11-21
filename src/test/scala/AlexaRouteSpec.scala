@@ -13,8 +13,11 @@ class AlexaRouteSpec extends AnyWordSpec with Matchers with ScalatestRouteTest {
   val route: Route = alexaRequest
 
   "The Alexa API" should {
-    "return 3 playables upon 'Alexa, play Howard Stern on SiriusXM'" in {
-      Post("/api/alexa", AlexaPostRequest("Alexa, play Howard Stern on SiriusXM")) ~> route ~> check {
+    "return 3 playables upon 'Alexa, play Howard Stern on SiriusXM' - titles" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Howard Stern on SiriusXM")
+      ) ~> route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[AlexaResponse]
         response.playable should have size 3
@@ -28,12 +31,48 @@ class AlexaRouteSpec extends AnyWordSpec with Matchers with ScalatestRouteTest {
   }
 
   "The Alexa API" should {
-    "should return 1 playables upon Alexa, play Howard Stern 24/7 on SiriusXM'" in {
-      Post("/api/alexa", AlexaPostRequest("Alexa, play Howard Stern 24/7 on SiriusXM")) ~> route ~> check {
+    "return 3 playables upon 'Alexa, play Howard Stern on SiriusXM' - map" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Howard Stern on SiriusXM")
+      ) ~> route ~> check {
+        status shouldBe StatusCodes.OK
+        val response = responseAs[AlexaResponse]
+        response.playable should have size 3
+        response.playable shouldBe List(
+          Map(
+            "id" -> "1",
+            "type" -> "channel",
+            "group" -> "playable",
+            "title" -> "Howard Stern 24/7"
+          ),
+          Map(
+            "id" -> "2",
+            "type" -> "episode",
+            "group" -> "playable",
+            "title" -> "Howard Stern - Interview with Dave Grohl"
+          ),
+          Map(
+            "id" -> "3",
+            "type" -> "episode",
+            "group" -> "playable",
+            "title" -> "Howard Stern - Metallica, Miley Cyrus, and Elton John"
+          )
+        )
+      }
+    }
+  }
+
+  "The Alexa API" should {
+    "should return 1 playables upon 'Alexa, play Howard Stern 24/7 on SiriusXM' - titles" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Howard Stern 24/7 on SiriusXM")
+      ) ~> route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[AlexaResponse]
         response.playable should have size 1
-        response.playable.map(_.apply("title")) should contain (
+        response.playable.map(_.apply("title")) should contain(
           "Howard Stern 24/7"
         )
       }
@@ -41,12 +80,36 @@ class AlexaRouteSpec extends AnyWordSpec with Matchers with ScalatestRouteTest {
   }
 
   "The Alexa API" should {
-    "should return 1 playables upon Alexa, play SiriusXM NFL Radio on SiriusXM'" in {
-      Post("/api/alexa", AlexaPostRequest("Alexa, play SiriusXM NFL Radio on SiriusXM")) ~> route ~> check {
+    "should return 1 playables upon 'Alexa, play Howard Stern 24/7 on SiriusXM' - map" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Howard Stern 24/7 on SiriusXM")
+      ) ~> route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[AlexaResponse]
         response.playable should have size 1
-        response.playable.map(_.apply("title")) should contain (
+        response.playable shouldBe List(
+          Map(
+            "id" -> "1",
+            "type" -> "channel",
+            "group" -> "playable",
+            "title" -> "Howard Stern 24/7"
+          )
+        )
+      }
+    }
+  }
+
+  "The Alexa API" should {
+    "should return 1 playables upon 'Alexa, play SiriusXM NFL Radio on SiriusXM' - titles" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play SiriusXM NFL Radio on SiriusXM")
+      ) ~> route ~> check {
+        status shouldBe StatusCodes.OK
+        val response = responseAs[AlexaResponse]
+        response.playable should have size 1
+        response.playable.map(_.apply("title")) should contain(
           "SiriusXM NFL Radio"
         )
       }
@@ -54,12 +117,36 @@ class AlexaRouteSpec extends AnyWordSpec with Matchers with ScalatestRouteTest {
   }
 
   "The Alexa API" should {
-    "should return 1 playables upon Alexa, play Sports on SiriusXM" in {
-      Post("/api/alexa", AlexaPostRequest("Alexa, play Sports on SiriusXM")) ~> route ~> check {
+    "should return 1 playables upon 'Alexa, play SiriusXM NFL Radio on SiriusXM' - map" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play SiriusXM NFL Radio on SiriusXM")
+      ) ~> route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[AlexaResponse]
         response.playable should have size 1
-        response.playable.map(_.apply("title")) should contain (
+        response.playable shouldBe List(
+          Map(
+            "id" -> "4",
+            "type" -> "channel",
+            "group" -> "playable",
+            "title" -> "SiriusXM NFL Radio"
+          )
+        )
+      }
+    }
+  }
+
+  "The Alexa API" should {
+    "should return 1 playables upon Alexa, play Sports on SiriusXM - titles" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Sports on SiriusXM")
+      ) ~> route ~> check {
+        status shouldBe StatusCodes.OK
+        val response = responseAs[AlexaResponse]
+        response.playable should have size 1
+        response.playable.map(_.apply("title")) should contain(
           "SiriusXM NFL Radio"
         )
       }
@@ -67,13 +154,58 @@ class AlexaRouteSpec extends AnyWordSpec with Matchers with ScalatestRouteTest {
   }
 
   "The Alexa API" should {
-    "should return 1 playables upon Alexa, play Elton John on SiriusXM" in {
-      Post("/api/alexa", AlexaPostRequest("Alexa, play Elton John on SiriusXM")) ~> route ~> check {
+    "should return 1 playables upon Alexa, play Sports on SiriusXM - map" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Sports on SiriusXM")
+      ) ~> route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[AlexaResponse]
         response.playable should have size 1
-        response.playable.map(_.apply("title")) should contain (
+        response.playable shouldBe List(
+          Map(
+            "id" -> "4",
+            "type" -> "channel",
+            "group" -> "playable",
+            "title" -> "SiriusXM NFL Radio"
+          )
+        )
+      }
+    }
+  }
+
+  "The Alexa API" should {
+    "should return 1 playables upon Alexa, play Elton John on SiriusXM - titles" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Elton John on SiriusXM")
+      ) ~> route ~> check {
+        status shouldBe StatusCodes.OK
+        val response = responseAs[AlexaResponse]
+        response.playable should have size 1
+        response.playable.map(_.apply("title")) should contain(
           "Howard Stern - Metallica, Miley Cyrus, and Elton John"
+        )
+      }
+    }
+  }
+
+  "The Alexa API" should {
+    "should return 1 playables upon Alexa, play Elton John on SiriusXM - map" in {
+      Post(
+        "/api/alexa",
+        AlexaPostRequest("Alexa, play Elton John on SiriusXM")
+      ) ~> route ~> check {
+        status shouldBe StatusCodes.OK
+        val response = responseAs[AlexaResponse]
+        response.playable should have size 1
+        response.playable shouldBe List(
+          Map(
+            "id" -> "3",
+            "type" -> "episode",
+            "group" -> "playable",
+            "title" -> "Howard Stern - Metallica, Miley Cyrus, and Elton John"
+          )
         )
       }
     }
