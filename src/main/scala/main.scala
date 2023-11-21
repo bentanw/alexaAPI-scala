@@ -10,25 +10,15 @@ import scala.util.{Failure, Success}
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 
+import api.AlexaRoute
+
 @main def httpserver: Unit =
 
   implicit val actorSystem: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "akka-http")
   implicit val executionContext: scala.concurrent.ExecutionContext = actorSystem.executionContext
-  
-  val route1 = get(
-    path("hello") {
-      complete(HttpEntity(ContentTypes.`text/plain(UTF-8)`, "Hello world from scala akka http server!"))
-    }
-  )
-
-  val route2 = get(
-    path("new-hello-world") {
-      complete(HttpEntity(ContentTypes.`text/plain(UTF-8)`, "Hello world2222 from scala akka http server!"))
-    }
-  )
 
   val route = cors(){
-    concat(route1,route2)
+    concat(AlexaRoute.alexaRequest)
   }
 
   val serverBinding = Http().newServerAt("127.0.0.1", 8080).bind(route)
