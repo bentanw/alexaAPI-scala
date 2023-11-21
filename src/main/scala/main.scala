@@ -17,18 +17,19 @@ import api.AlexaRoute
   implicit val actorSystem: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "akka-http")
   implicit val executionContext: scala.concurrent.ExecutionContext = actorSystem.executionContext
 
-  val route = cors(){
+  val route = cors() {
     concat(AlexaRoute.alexaRequest)
   }
 
-  val serverBinding = Http().newServerAt("127.0.0.1", 8080).bind(route)
-  
-  serverBinding.onComplete {
+  // entry into routing
+  Http().newServerAt("127.0.0.1", 8080).bind(route).onComplete {
     case Success(binding) =>
       val address = binding.localAddress
-      println(s"Server online at http://${address.getHostString}:${address.getPort}/")
+      println(
+        s"Server online at http://${address.getHostString}:${address.getPort}/"
+      )
     case Failure(exception) =>
-      println(s"Failed to bind to 127.0.0.1:8080!")
+      println(s"Failed to bind")
       exception.printStackTrace()
       actorSystem.terminate()
   }
