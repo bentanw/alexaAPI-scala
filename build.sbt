@@ -11,6 +11,7 @@ lazy val root = project
       "com.typesafe.akka" %% "akka-http-spray-json" % "10.2.4",
       "ch.megard" %% "akka-http-cors" % "1.1.1",
       "com.typesafe.akka" %% "akka-http-testkit" % "10.2.4" % Test,
-      "org.scalatest" %% "scalatest" % "3.2.9" % Test
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test,
+      "com.typesafe.akka" %% "akka-testkit" % "2.6.14" % Test
     )
   )

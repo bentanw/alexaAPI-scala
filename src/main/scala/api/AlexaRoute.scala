@@ -7,12 +7,20 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import spray.json.DefaultJsonProtocol._
 import spray.json.RootJsonFormat
 import spray.json._
+import scala.util.matching.Regex
 
-trait AlexaRouteDefinitions {
-  def alexaRequest: Route
+// Define case classes for request and response, define trait for JSON marshalling and unmarshalling
+trait JsonFormats {
+  case class AlexaPostRequest(input: String)
+  case class AlexaResponse(playable: List[Map[String, String]])
+  implicit val alexaPostRequestFormat: RootJsonFormat[AlexaPostRequest] =
+    jsonFormat1(AlexaPostRequest)
+  implicit val alexaResponseFormat: RootJsonFormat[AlexaResponse] = jsonFormat1(
+    AlexaResponse
+  )
 }
 
-object AlexaRoute extends AlexaRouteDefinitions {
+object AlexaRoute extends JsonFormats {
   val contentTable: List[Map[String, String]] = List(
     Map(
       "id" -> "1",
@@ -58,22 +66,13 @@ object AlexaRoute extends AlexaRouteDefinitions {
     Map("container_id" -> "6", "playable_id" -> "4")
   )
 
-  // Define structure of POST request body and JSON response, define JSON format
-  case class AlexaPostRequest(input: String)
-  case class AlexaResponse(data: List[Map[String, String]])
-  implicit val alexaResponseFormat: RootJsonFormat[AlexaResponse] = jsonFormat1(
-    AlexaResponse.apply
-  )
-  implicit val alexaPostRequestFormat: RootJsonFormat[AlexaPostRequest] =
-    jsonFormat1(AlexaPostRequest.apply)
-
   // Route handling POST request
   def alexaRequest: Route = post {
     path("api" / "alexa") {
       entity(as[AlexaPostRequest]) { alexaPostRequest =>
-        val requestData = alexaPostRequest.input
-        val titlePattern = "play (.*) on".r
-        val title = titlePattern
+        val requestData: String = alexaPostRequest.input
+        val titlePattern: Regex = "play (.*) on".r
+        val title: String = titlePattern
           .findFirstMatchIn(requestData)
           .map(_.group(1).trim)
           .getOrElse("")
@@ -89,13 +88,13 @@ object AlexaRoute extends AlexaRouteDefinitions {
               item("title").contains(title) && item("group") == "container"
             )
 
-          val playableIds = containerToPlayable.flatMap { ctp =>
+          val playableIds: List[String] = containerToPlayable.flatMap { ctp =>
             containers
               .find(_.apply("id") == ctp("container_id"))
               .map(_ => ctp("playable_id"))
           }
 
-          val playables = if (containers.nonEmpty) {
+          val playables: List[Map[String, String]] = if (containers.nonEmpty) {
             contentTable.filter(item =>
               playableIds.contains(item("id")) && item("group") == "playable"
             )
