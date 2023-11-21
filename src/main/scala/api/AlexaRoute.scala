@@ -70,6 +70,7 @@ object AlexaRoute extends JsonFormats {
   def alexaRequest: Route = post {
     path("api" / "alexa") {
       entity(as[AlexaPostRequest]) { alexaPostRequest =>
+        // Get everything between play __ on SiriusXM
         val requestData: String = alexaPostRequest.input
         val titlePattern: Regex = "play (.*) on".r
         val title: String = titlePattern
@@ -77,6 +78,7 @@ object AlexaRoute extends JsonFormats {
           .map(_.group(1).trim)
           .getOrElse("")
 
+        // if title is empty, return, else match title to contentTable
         if (title.isEmpty) {
           complete(
             StatusCodes.BadRequest,
@@ -88,12 +90,14 @@ object AlexaRoute extends JsonFormats {
               item("title").contains(title) && item("group") == "container"
             )
 
+          // look for matches in containerToPlayable, eg. if containerID=5, look for all maps with containerID=5
           val playableIds: List[String] = containerToPlayable.flatMap { ctp =>
             containers
               .find(_.apply("id") == ctp("container_id"))
               .map(_ => ctp("playable_id"))
           }
 
+          // if playablesID = ["4","5"], it looks for [{id:4, title:...}, {id:5, title:...}]
           val playables: List[Map[String, String]] = if (containers.nonEmpty) {
             contentTable.filter(item =>
               playableIds.contains(item("id")) && item("group") == "playable"

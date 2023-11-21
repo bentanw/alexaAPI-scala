@@ -41,7 +41,7 @@ class AlexaRouteSpec extends AnyWordSpec with Matchers with ScalatestRouteTest {
   }
 
   "The Alexa API" should {
-    "should return 3 playables upon Alexa, play SiriusXM NFL Radio on SiriusXM'" in {
+    "should return 1 playables upon Alexa, play SiriusXM NFL Radio on SiriusXM'" in {
       Post("/api/alexa", AlexaPostRequest("Alexa, play SiriusXM NFL Radio on SiriusXM")) ~> route ~> check {
         status shouldBe StatusCodes.OK
         val response = responseAs[AlexaResponse]
