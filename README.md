@@ -1,0 +1,3 @@
+- install sbt if you haven't already through homebrew (MacOS)
+- run the following command in terminal of the directory: `sbt`
+- run the following command inside of sbt: `~reStart`

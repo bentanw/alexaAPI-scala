@@ -1,0 +1,70 @@
+# Compiled class and package files
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# sbt specific
+.cache
+.history
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/target/
+project/project/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+
+# IntelliJ IDEA specific
+.idea/
+*.iml
+*.iws
+
+# Eclipse specific
+.classpath
+.project
+.settings/
+
+# VS Code specific
+.vscode/
+
+# Metals specific
+.metals/
+.bloop/
+
+# Ensime specific
+.ensime
+.ensime_cache/
+
+# Worksheets (e.g., for Dotty)
+*.worksheet.sc
+
+# Mac OS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+
+# Linux specific
+*.swp
+
+# User-specific SBT files
+/*.sbt
+
+# Exclude all SBT configuration except plugins.sbt
+project/*.sbt
+!project/plugins.sbt
+
+# Exclude the sbt UI's local settings
+/ui/repository
+/ui/conf
+
+# Exclude any local configuration files
+local.*
