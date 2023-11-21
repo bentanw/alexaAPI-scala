@@ -18,10 +18,10 @@ import api.AlexaRoute
   implicit val executionContext: scala.concurrent.ExecutionContext = actorSystem.executionContext
 
   val route = cors() {
-    concat(AlexaRoute.alexaRequest)
+    concat(AlexaRoute.allRoutes)
   }
 
-  // entry into routing
+  // start up server
   Http().newServerAt("127.0.0.1", 8080).bind(route).onComplete {
     case Success(binding) =>
       val address = binding.localAddress
@@ -33,5 +33,4 @@ import api.AlexaRoute
       exception.printStackTrace()
       actorSystem.terminate()
   }
-
   Await.result(actorSystem.whenTerminated, Duration.Inf)
