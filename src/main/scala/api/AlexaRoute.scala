@@ -58,22 +58,55 @@ object AlexaRoute extends AlexaRouteDefinitions {
     Map("container_id" -> "6", "playable_id" -> "4")
   )
 
-  
-  // Define the structure of the expected POST request body and JSON response
+  // Define structure of POST request body and JSON response, define JSON format
   case class AlexaPostRequest(input: String)
-  case class AlexaResponse(data: String)
-
-  // Define a JSON format for the AlexaResponse case class
-  implicit val alexaResponseFormat: RootJsonFormat[AlexaResponse] = jsonFormat1(AlexaResponse)
-  implicit val alexaPostRequestFormat: RootJsonFormat[AlexaPostRequest] = jsonFormat1(AlexaPostRequest)
+  case class AlexaResponse(data: List[Map[String, String]])
+  implicit val alexaResponseFormat: RootJsonFormat[AlexaResponse] = jsonFormat1(
+    AlexaResponse.apply
+  )
+  implicit val alexaPostRequestFormat: RootJsonFormat[AlexaPostRequest] =
+    jsonFormat1(AlexaPostRequest.apply)
 
   // Route handling POST request
   def alexaRequest: Route = post {
     path("api" / "alexa") {
       entity(as[AlexaPostRequest]) { alexaPostRequest =>
-        val response = AlexaResponse(alexaPostRequest.input)
-        print(response)
-        complete(response)
+        val requestData = alexaPostRequest.input
+        val titlePattern = "play (.*) on".r
+        val title = titlePattern
+          .findFirstMatchIn(requestData)
+          .map(_.group(1).trim)
+          .getOrElse("")
+
+        if (title.isEmpty) {
+          complete(
+            StatusCodes.BadRequest,
+            "Please provide a valid input in the format of 'Hey Alexa, play ___ on SiriusXM'"
+          )
+        } else {
+          val containers: List[Map[String, String]] =
+            contentTable.filter(item =>
+              item("title").contains(title) && item("group") == "container"
+            )
+
+          val playableIds = containerToPlayable.flatMap { ctp =>
+            containers
+              .find(_.apply("id") == ctp("container_id"))
+              .map(_ => ctp("playable_id"))
+          }
+
+          val playables = if (containers.nonEmpty) {
+            contentTable.filter(item =>
+              playableIds.contains(item("id")) && item("group") == "playable"
+            )
+          } else {
+            contentTable.filter(item =>
+              item("title").contains(title) && item("group") == "playable"
+            )
+          }
+
+          complete(AlexaResponse(playables))
+        }
       }
     }
   }
