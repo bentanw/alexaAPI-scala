@@ -12,10 +12,11 @@ import scala.concurrent.Await
 
 import api.AlexaRoute
 
-@main def httpserver: Unit =
-
-  implicit val actorSystem: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "akka-http")
-  implicit val executionContext: scala.concurrent.ExecutionContext = actorSystem.executionContext
+object HttpServer extends App {
+  implicit val actorSystem: ActorSystem[Nothing] =
+    ActorSystem(Behaviors.empty, "akka-http")
+  implicit val executionContext: scala.concurrent.ExecutionContext =
+    actorSystem.executionContext
 
   val route = cors() {
     concat(AlexaRoute.allRoutes)
@@ -34,3 +35,4 @@ import api.AlexaRoute
       actorSystem.terminate()
   }
   Await.result(actorSystem.whenTerminated, Duration.Inf)
+}
