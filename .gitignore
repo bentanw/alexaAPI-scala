@@ -55,9 +55,6 @@ Thumbs.db
 # Linux specific
 *.swp
 
-# User-specific SBT files
-/*.sbt
-
 # Exclude all SBT configuration except plugins.sbt
 project/*.sbt
 !project/plugins.sbt
