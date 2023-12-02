@@ -14,3 +14,8 @@
 - Run the following command in terminal `sbt compile`
 - Run the following command in terminal `sbt clean`
 - Run the following command in terminal `sbt test`
+
+### Example expected input and output
+**example expected input**: {"input": "Alexa, play Howard Stern 24/7 on SiriusXM"}
+<br />
+**example expected output**: {playable: [{id: "1", type: "channel", group: "playable", title: "Howard stern 24/7"}]
